@@ -1,18 +1,46 @@
-from sqlalchemy import Column, UUID, BigInteger, DateTime, ForeignKey
+from sqlalchemy import Column, BigInteger, DateTime, ForeignKey, Integer
 from sqlalchemy.orm import relationship
-from core.database import Base
+from backend.core.database import Base
 from datetime import datetime
 
+
 class Ledger(Base):
-  __tablename__ = "ledger"
+    __tablename__ = "ledger"
 
-  id = Column(UUID(as_uuid=True), primary_key=True, nullable=False)
-  transaction_id = Column(UUID(as_uuid=True), ForeignKey("transactions.id"), nullable=False) 
-  account_id = Column(UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        autoincrement=True
+    )
 
-  amount = Column(BigInteger)
-  created_at = Column(DateTime, default=datetime)
+    transaction_id = Column(
+        Integer,
+        ForeignKey("transactions.id"),
+        nullable=False
+    )
 
-  transaction = relationship("Transaction", back_populates="ledger")
+    account_id = Column(
+        Integer,
+        ForeignKey("accounts.id"),
+        nullable=False
+    )
 
-  account = relationship("Account", back_populates = "ledger")
+    amount = Column(
+        BigInteger,
+        nullable=False
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+    transaction = relationship(
+        "Transaction",
+        back_populates="ledgers"
+    )
+
+    account = relationship(
+        "Account",
+        back_populates="ledgers"
+    )

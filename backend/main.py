@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 import uvicorn
-from core.database import Base, engine
-import models
+from backend.core.database import Base, engine
+import backend.models
+from backend.routers.users import router as auth_router
+from backend.core.logger import logger
 
 Base.metadata.create_all(bind=engine)
 
@@ -12,7 +14,10 @@ app = FastAPI(
 
 @app.get("/")
 def read_root():
+  logger.info("Root endpoint accessed")
   return {"Helllo" : "World"}
+
+app.include_router(auth_router)
 
 if __name__ == "__main__":
   uvicorn.run(
