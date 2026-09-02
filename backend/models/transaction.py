@@ -7,8 +7,10 @@ class Transaction(Base):
   __tablename__ = "transactions"
 
   id = Column(Integer, primary_key=True, autoincrement=True)
-  idempotency_key = Column(String, unique=True, index=True)
-  description = Column(String)
-  created_at = Column(DateTime, default=datetime)
+  # idempotency_key = Column(String, unique=True, index=True)
+
+  reference = Column(String, unique=True, nullable=False)
+  description = Column(String, nullable=True)
+  created_at = Column(DateTime, default=datetime.utcnow)
 
   ledgers = relationship("Ledger", back_populates="transaction")

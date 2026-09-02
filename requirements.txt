@@ -6,6 +6,6 @@ alembic>=1.18.5
 pydantic-settings>=2.14.2
 psycopg>=3.3.4
 email-validator>=2.3.0
-passlib
+passlib>=1.7.4
 python-jose
 bcrypt>=4.0.1

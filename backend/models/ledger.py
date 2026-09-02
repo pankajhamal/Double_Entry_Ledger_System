@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, DateTime, ForeignKey, Integer
+from sqlalchemy import Column, BigInteger, DateTime, ForeignKey, Integer, Numeric
 from sqlalchemy.orm import relationship
 from backend.core.database import Base
 from datetime import datetime
@@ -16,7 +16,7 @@ class Ledger(Base):
     transaction_id = Column(
         Integer,
         ForeignKey("transactions.id"),
-        nullable=False
+        nullable=True
     )
 
     account_id = Column(
@@ -25,10 +25,19 @@ class Ledger(Base):
         nullable=False
     )
 
-    amount = Column(
-        BigInteger,
+
+    debit = Column(
+        Numeric(18, 2),
+        default=0,
         nullable=False
     )
+
+    credit = Column(
+        Numeric(18, 2),
+        default=0,
+        nullable=False
+    )
+
 
     created_at = Column(
         DateTime,

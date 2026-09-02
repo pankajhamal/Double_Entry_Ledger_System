@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 
 from backend.core.database import get_db
-from backend.models import User
+from backend.models import User, Account, Ledger, AccountType, STATUS, Transaction
 from backend.schema.user import UserSignupRequest, UserLoginRequest
 from backend.auth.auth import hash_password, verify_password
 from backend.core.logger import logger
@@ -40,12 +40,50 @@ def signup(user: UserSignupRequest, db: Session = Depends(get_db)):
     )
 
     db.add(new_user)
+    db.flush() #Get new_user.id without commiting
+
+    #Create a new account for new user
+    new_account = Account(
+        user_id = new_user.id,
+        currency = "NRP",
+        account_type = AccountType.SAVING,
+        status = STATUS.ACTIVE
+    )
+
+    db.add(new_account)
+    db.flush()
+
+    opening_transaction = Transaction(
+        reference = f"OPENING-{new_account.id}",
+        description = f"Initial account balance"
+    )
+    db.add(opening_transaction)
+    db.flush()
+
+    user_entry = Ledger(
+        transaction_id = opening_transaction.id,
+        account_id = new_account.id,
+        debit = 10000,
+        credit = 0,
+    )
+    system_entry = Ledger(
+        transaction_id = opening_transaction.id,
+        account_id = new_account.id,
+        debit = 0, 
+        credit = 10000
+    )   
+
+    db.add(user_entry)
+    db.add(system_entry)
+
     db.commit()
     db.refresh(new_user)
+    db.refresh(new_account)
 
     return {
         "message": "User created",
-        "id": new_user.id
+        "id": new_user.id,
+        "account_id": new_account.id
     }
 
 @router.post("/login")
