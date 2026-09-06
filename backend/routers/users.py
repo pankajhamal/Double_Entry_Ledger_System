@@ -9,7 +9,7 @@ from backend.auth.auth import hash_password, verify_password
 from backend.core.logger import logger
 
 router = APIRouter(
-    prefix="/ledger",
+    prefix="/auth",
     tags=["Double Entry Ledger"]
 )
 
