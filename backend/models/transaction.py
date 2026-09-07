@@ -7,7 +7,7 @@ class Transaction(Base):
   __tablename__ = "transactions"
 
   id = Column(Integer, primary_key=True, autoincrement=True)
-  # idempotency_key = Column(String, unique=True, index=True)
+  idempotency_key = Column(String, unique=True, nullable=False, index=True)
 
   reference = Column(String, unique=True, nullable=False)
   description = Column(String, nullable=True)

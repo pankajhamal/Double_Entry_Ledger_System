@@ -40,6 +40,7 @@ async def get_current_user(
             detail="Invalid Token"
         )
 
+    user_id = int(user_id)
     user = db.query(User).filter(User.id == user_id).first()
 
     if user is None:

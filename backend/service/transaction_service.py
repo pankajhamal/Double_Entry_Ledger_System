@@ -11,12 +11,20 @@ logger = logging.getLogger(__name__)
 
 class TransactionService:
 
-    async def payment_service(self, payload, current_user, db:Session) -> Dict[str, Any]:
+    async def payment_service(self, payload, current_user, idempotency_key, db:Session) -> Dict[str, Any]:
         "User Transaction"
         data = payload.model_dump(mode="json")
         sender_id = current_user.id
         receiver_id = payload.receiver_id
         amount = int(payload.amount)
+
+        existing_transaction = db.query(Transaction).filter(Transaction.idempotency_key == idempotency_key).first()
+        if existing_transaction:
+            return{
+                "message": "Transaction already proceed",
+                "transaction_id": existing_transaction.id,
+                "reference": existing_transaction.reference
+            }
 
         if amount<=0:
             raise ValueError("Amount must be greater than 0")
