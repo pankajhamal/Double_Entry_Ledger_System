@@ -5,7 +5,7 @@ from sqlalchemy import select
 from backend.core.database import get_db
 from backend.models import User, Account, Ledger, AccountType, STATUS, Transaction
 from backend.schema.user import UserSignupRequest, UserLoginRequest
-from backend.auth.auth import hash_password, verify_password
+from backend.auth.auth import hash_password, verify_password, create_access_token
 from backend.core.logger import logger
 
 router = APIRouter(
@@ -66,15 +66,15 @@ def signup(user: UserSignupRequest, db: Session = Depends(get_db)):
         debit = 10000,
         credit = 0,
     )
-    system_entry = Ledger(
-        transaction_id = opening_transaction.id,
-        account_id = new_account.id,
-        debit = 0, 
-        credit = 10000
-    )   
+    # system_entry = Ledger(
+    #     transaction_id = opening_transaction.id,
+    #     account_id = new_account.id,
+    #     debit = 0, 
+    #     credit = 10000
+    # )   
 
     db.add(user_entry)
-    db.add(system_entry)
+    # db.add(system_entry)
 
     db.commit()
     db.refresh(new_user)
@@ -108,7 +108,12 @@ def login(user: UserLoginRequest, db: Session = Depends(get_db)):
             detail="Invalid Email or Password"
         )
 
+    token = create_access_token({
+        "sub": str(existing_user.id)
+    })
+    
+    logger.info("Access token: %s", token)
     return {
-        "Message": "User Login Successfull",
-        "user": existing_user.name
+        "access_token": token,
+        "token_type": "bearer"
     }

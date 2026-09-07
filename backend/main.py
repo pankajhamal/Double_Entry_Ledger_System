@@ -3,6 +3,7 @@ import uvicorn
 from backend.core.database import Base, engine
 import backend.models
 from backend.routers.users import router as auth_router
+from backend.routers.transaction import router as payment_router
 from backend.core.logger import logger
 
 Base.metadata.create_all(bind=engine)
@@ -18,6 +19,8 @@ def read_root():
   return {"Helllo" : "World"}
 
 app.include_router(auth_router)
+app.include_router(payment_router)
+
 
 if __name__ == "__main__":
   uvicorn.run(
