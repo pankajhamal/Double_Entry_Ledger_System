@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+import uuid
 
 from backend.core.database import get_db
 from backend.models import User, Account, Ledger, AccountType, STATUS, Transaction
@@ -14,7 +15,7 @@ router = APIRouter(
 )
 
 @router.post("/signup")
-def signup(user: UserSignupRequest, db: Session = Depends(get_db)):
+def signup(user: UserSignupRequest,  db: Session = Depends(get_db)):
 
     #Check if user already exist
     existing_user = db.query(User).filter(
@@ -53,9 +54,11 @@ def signup(user: UserSignupRequest, db: Session = Depends(get_db)):
     db.add(new_account)
     db.flush()
 
+    
     opening_transaction = Transaction(
         reference = f"OPENING-{new_account.id}",
-        description = f"Initial account balance"
+        description = f"Initial account balance",
+        idempotency_key = str(uuid.uuid4())
     )
     db.add(opening_transaction)
     db.flush()
