@@ -37,7 +37,7 @@ Sender Account
 
 Receiver Account
     Debit → amount
-
+```
 
 ## How to Run the Project
 
@@ -64,3 +64,4 @@ python3.13 --version
 docker --version
 docker compose version
 git --version
+```
