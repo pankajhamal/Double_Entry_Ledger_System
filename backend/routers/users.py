@@ -8,6 +8,7 @@ from backend.models import User, Account, Ledger, AccountType, STATUS, Transacti
 from backend.schema.user import UserSignupRequest, UserLoginRequest
 from backend.auth.auth import hash_password, verify_password, create_access_token
 from backend.core.logger import logger
+from backend.core.redis import check_rate_limit
 
 router = APIRouter(
     prefix="/auth",
@@ -17,6 +18,7 @@ router = APIRouter(
 @router.post("/signup")
 def signup(user: UserSignupRequest,  db: Session = Depends(get_db)):
 
+    
     #Check if user already exist
     existing_user = db.query(User).filter(
         User.email == user.email
@@ -43,6 +45,7 @@ def signup(user: UserSignupRequest,  db: Session = Depends(get_db)):
     db.add(new_user)
     db.flush() #Get new_user.id without commiting
 
+    check_rate_limit(new_user.id)
     #Create a new account for new user
     new_account = Account(
         user_id = new_user.id,
@@ -92,11 +95,16 @@ def signup(user: UserSignupRequest,  db: Session = Depends(get_db)):
 @router.post("/login")
 def login(user: UserLoginRequest, db: Session = Depends(get_db)):
 
+    
+
     result = db.execute(
         select(User).where(User.email == user.email)
     )
 
+
     existing_user = result.scalar_one_or_none()
+
+    check_rate_limit(existing_user.id)
 
     if not existing_user:
         raise HTTPException(

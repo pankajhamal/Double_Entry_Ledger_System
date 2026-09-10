@@ -8,6 +8,7 @@ from backend.service.transaction_service import TransactionService
 from backend.auth.security import get_current_user
 from backend.core.database import get_db
 from backend.core.db_adapter import get_user_balance, get_user_history
+from backend.core.redis import check_rate_limit
 
 transaction_service = TransactionService()
 
@@ -48,6 +49,7 @@ def check_user_balance(current_user: User = Depends(get_current_user), db: Sessi
 @router.get("/history")
 def check_user_history(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
 
+    check_rate_limit(current_user.id)
     account = db.query(Account).filter(Account.user_id == current_user.id).first()
 
     if account is None:
