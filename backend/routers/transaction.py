@@ -7,7 +7,7 @@ from backend.models.account import Account
 from backend.service.transaction_service import TransactionService
 from backend.auth.security import get_current_user
 from backend.core.database import get_db
-from backend.core.db_adapter import get_user_balance
+from backend.core.db_adapter import get_user_balance, get_user_history
 
 transaction_service = TransactionService()
 
@@ -43,3 +43,18 @@ def check_user_balance(current_user: User = Depends(get_current_user), db: Sessi
     return{
         user_balance
     }
+
+#Get history or user
+@router.get("/history")
+def check_user_history(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+
+    account = db.query(Account).filter(Account.user_id == current_user.id).first()
+
+    if account is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Account not found"
+        )
+    user_history = get_user_history(account.id, db)
+
+    return user_history

@@ -29,3 +29,10 @@ def get_user_balance(account_id, db: Session):
     )
 
     return balance
+
+def get_user_history(account_id, db: Session):
+
+    history = db.query(Ledger).filter(Ledger.account_id == account_id).order_by(Ledger.id.desc()).all()
+
+    return history
+
