@@ -14,6 +14,12 @@ class Settings(BaseSettings):
   SECRET_KEY: str
   ALGORITHM: str
 
+  RABBITMQ_DEFAULT_USER: str
+  RABBITMQ_DEFAULT_PASSWORD: str
+  RABBITMQ_HOST: str
+  RABBITMQ_PORT: 5672
+  RABBITMQ_QUEUE: str
+
   model_config = SettingsConfigDict(
     env_file=".env", env_file_encoding = 'utf-8', extra="ignore"
   )

@@ -6,11 +6,29 @@ from backend.routers.users import router as auth_router
 from backend.routers.transaction import router as payment_router
 from backend.core.logger import logger
 
+from contextlib import asynccontextmanager
+from backend.infrastructure.rabbitmq import rabbitmq
+
 Base.metadata.create_all(bind=engine)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+  #Startup
+  logger.info("Connecting to RabbitMQ...")
+  await rabbitmq.connect()
+  logger.info("RabbitMQ connected successfully")
+
+  yield
+
+  #shutdown
+  logger.info("Closing RabbitMQ connection...")
+  await rabbitmq.close()
+  logger.info("RabbitMQ connection closed")
 
 app = FastAPI(
   title="Double Entry Leader System",
-  version="1.0.0"
+  version="1.0.0",
+  lifespan=lifespan
 )
 
 @app.get("/")
