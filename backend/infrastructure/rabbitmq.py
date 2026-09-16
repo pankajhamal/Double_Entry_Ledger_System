@@ -10,8 +10,8 @@ class RabbitMQ:
 
     async def connect(self):
         url = (
-            f"amqp://{settings.RABBITMQ_DEFAULT_USER}:"
-            f"{settings.RABBITMQ_DEFAULT_PASSWORD}@"
+            f"amqp://{settings.RABBITMQ_USER}:"
+            f"{settings.RABBITMQ_PASSWORD}@"
             f"{settings.RABBITMQ_HOST}:"
             f"{settings.RABBITMQ_PORT}/"
         )
