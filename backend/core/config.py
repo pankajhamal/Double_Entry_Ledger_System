@@ -17,8 +17,11 @@ class Settings(BaseSettings):
   RABBITMQ_USER: str
   RABBITMQ_PASSWORD: str
   RABBITMQ_HOST: str
-  RABBITMQ_PORT: 5672
+  RABBITMQ_PORT: int = 5672
   RABBITMQ_QUEUE: str
+
+  REDIS_HOST: str = "localhost"
+  REDIS_PORT: int = 6379
 
   model_config = SettingsConfigDict(
     env_file=".env", env_file_encoding = 'utf-8', extra="ignore"
